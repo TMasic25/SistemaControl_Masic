@@ -216,7 +216,7 @@
             log('📊 Datos del formulario:');
             log(JSON.stringify(data, null, 2));
             
-            if (SCRIPT_URL === "PEGA_AQUI_TU_URL_COMPLETA") {
+            if (SCRIPT_URL === "https://script.google.com/macros/s/AKfycbyGBwFkbRP-y6K_qD1plEgfOlCm__ePaOZ8WZxCXCQcFyewkZy-RkvlKjyvizP1Mkua/exec") {
                 log('❌ ERROR: URL no configurada');
                 alert('ERROR: Por favor configura la URL del Google Apps Script en el código');
                 return;
@@ -264,7 +264,7 @@
 
         // Iniciar
         log('🚀 App iniciada');
-        log('📍 URL configurada: ' + (SCRIPT_URL !== "PEGA_AQUI_TU_URL_COMPLETA" ? "SÍ ✅" : "NO ❌"));
+        log('📍 URL configurada: ' + (SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbyGBwFkbRP-y6K_qD1plEgfOlCm__ePaOZ8WZxCXCQcFyewkZy-RkvlKjyvizP1Mkua/exec" ? "SÍ ✅" : "NO ❌"));
         render();
     </script>
 </body>
