@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Servicios - Torres VIP</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--tg-theme-text-color, #000000);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--tg-theme-text-color, #000000);
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid var(--tg-theme-hint-color, #999999);
+            border-radius: 8px;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--tg-theme-button-color, #3390ec);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--tg-theme-hint-color, #999999);
+        }
+
+        .error-message {
+            background-color: #ffe6e6;
+            color: #c0392b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        /* Estilo para selects con datos cargados */
+        select.loaded {
+            background-color: #f0f9ff;
+        }
+
+        select.loading-data {
+            background-color: #fff9e6;
+        }
+
+        select.error-data {
+            background-color: #ffe6e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Registro de Servicio</h1>
+        
+        <div id="mensajeEstado"></div>
+
+        <form id="formularioServicio">
+            <!-- Cliente -->
+            <div class="form-group">
+                <label for="cliente">Cliente <span class="required">*</span></label>
+                <select id="cliente" name="cliente" required>
+                    <option value="">Cargando clientes...</option>
+                </select>
+            </div>
+
+            <!-- Vehículo -->
+            <div class="form-group">
+                <label for="vehiculo">Vehículo (Patente) <span class="required">*</span></label>
+                <select id="vehiculo" name="vehiculo" required>
+                    <option value="">Cargando vehículos...</option>
+                </select>
+            </div>
+
+            <!-- Conductor -->
+            <div class="form-group">
+                <label for="conductor">Conductor <span class="required">*</span></label>
+                <select id="conductor" name="conductor" required>
+                    <option value="">Cargando conductores...</option>
+                </select>
+            </div>
+
+            <!-- Tipo de Servicio -->
+            <div class="form-group">
+                <label for="tipoServicio">Tipo de Servicio <span class="required">*</span></label>
+                <select id="tipoServicio" name="tipoServicio" required>
+                    <option value="">Cargando tipos...</option>
+                </select>
+            </div>
+
+            <!-- Origen -->
+            <div class="form-group">
+                <label for="origen">Origen <span class="required">*</span></label>
+                <input type="text" id="origen" name="origen" placeholder="Ej: Aeropuerto El Tepual" required>
+            </div>
+
+            <!-- Destino -->
+            <div class="form-group">
+                <label for="destino">Destino <span class="required">*</span></label>
+                <input type="text" id="destino" name="destino" placeholder="Ej: Hotel Dreams" required>
+            </div>
+
+            <!-- Kilómetros -->
+            <div class="form-group">
+                <label for="km">Kilómetros <span class="required">*</span></label>
+                <input type="number" id="km" name="km" placeholder="Ej: 25" min="0" required>
+            </div>
+
+            <!-- Pasajeros -->
+            <div class="form-group">
+                <label for="pasajeros">Número de Pasajeros <span class="required">*</span></label>
+                <input type="number" id="pasajeros" name="pasajeros" placeholder="Ej: 4" min="1" required>
+            </div>
+
+            <!-- Monto -->
+            <div class="form-group">
+                <label for="monto">Monto ($) <span class="required">*</span></label>
+                <input type="number" id="monto" name="monto" placeholder="Ej: 35000" min="0" required>
+            </div>
+
+            <!-- Forma de Pago -->
+            <div class="form-group">
+                <label for="formaPago">Forma de Pago <span class="required">*</span></label>
+                <select id="formaPago" name="formaPago" required>
+                    <option value="">Cargando formas de pago...</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // =============================================
+        // CONFIGURACIÓN
+        // =============================================
+        const GOOGLE_SCRIPT_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI';
+        
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.MainButton.setText('Registrar Servicio');
+        tg.MainButton.show();
+
+        // =============================================
+        // VARIABLES GLOBALES
+        // =============================================
+        let datosClientes = [];
+        let datosVehiculos = [];
+        let datosConductores = [];
+        let datosTiposServicio = [];
+        let datosFormasPago = [];
+
+        // =============================================
+        // FUNCIONES PARA CARGAR DATOS
+        // =============================================
+        async function cargarDatosDesdeGoogleSheets(action) {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: action })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Error desconocido');
+                }
+
+                return result.data;
+            } catch (error) {
+                console.error(`❌ Error al cargar ${action}:`, error);
+                throw error;
+            }
+        }
+
+        function llenarSelect(selectId, datos, valorKey, textoKey, textoExtra = null) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="">Selecciona una opción</option>';
+            
+            datos.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item[valorKey];
+                
+                if (textoExtra) {
+                    option.textContent = `${item[textoKey]} - ${item[textoExtra]}`;
+                } else {
+                    option.textContent = item[textoKey];
+                }
+                
+                select.appendChild(option);
+            });
+            
+            select.classList.remove('loading-data', 'error-data');
+            select.classList.add('loaded');
+        }
+
+        function marcarSelectError(selectId, mensaje) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = `<option value="">${mensaje}</option>`;
+            select.classList.remove('loading-data', 'loaded');
+            select.classList.add('error-data');
+        }
+
+        // =============================================
+        // CARGAR TODOS LOS DATOS AL INICIAR
+        // =============================================
+        async function inicializarApp() {
+            console.log('🚀 Iniciando aplicación...');
+            mostrarMensaje('Cargando datos desde Google Sheets...', 'info');
+
+            // Verificar que la URL esté configurada
+            if (GOOGLE_SCRIPT_URL === 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI') {
+                mostrarMensaje('⚠️ ERROR: Debes configurar la URL de Google Apps Script', 'error');
+                return;
+            }
+
+            try {
+                // Cargar todos los datos en paralelo
+                const [clientes, vehiculos, conductores, tiposServicio, formasPago] = await Promise.all([
+                    cargarDatosDesdeGoogleSheets('obtenerClientes'),
+                    cargarDatosDesdeGoogleSheets('obtenerVehiculos'),
+                    cargarDatosDesdeGoogleSheets('obtenerConductores'),
+                    cargarDatosDesdeGoogleSheets('obtenerTiposServicio'),
+                    cargarDatosDesdeGoogleSheets('obtenerFormasPago')
+                ]);
+
+                // Guardar datos en variables globales
+                datosClientes = clientes;
+                datosVehiculos = vehiculos;
+                datosConductores = conductores;
+                datosTiposServicio = tiposServicio;
+                datosFormasPago = formasPago;
+
+                // Llenar los selects
+                llenarSelect('cliente', clientes, 'nombre', 'nombre');
+                llenarSelect('vehiculo', vehiculos, 'patente', 'patente', 'marca');
+                llenarSelect('conductor', conductores, 'nombre', 'nombre');
+                llenarSelect('tipoServicio', tiposServicio, 'codigo', 'descripcion');
+                llenarSelect('formaPago', formasPago, 'codigo', 'descripcion');
+
+                mostrarMensaje(`✅ Datos cargados: ${clientes.length} clientes, ${vehiculos.length} vehículos, ${conductores.length} conductores`, 'success');
+                
+                console.log('✅ Todos los datos cargados correctamente');
+            } catch (error) {
+                console.error('❌ Error al cargar datos:', error);
+                mostrarMensaje('❌ Error al cargar datos. Verifica tu conexión e intenta nuevamente.', 'error');
+                
+                // Marcar todos los selects con error
+                marcarSelectError('cliente', '❌ Error al cargar');
+                marcarSelectError('vehiculo', '❌ Error al cargar');
+                marcarSelectError('conductor', '❌ Error al cargar');
+                marcarSelectError('tipoServicio', '❌ Error al cargar');
+                marcarSelectError('formaPago', '❌ Error al cargar');
+            }
+        }
+
+        // =============================================
+        // FUNCIONES DE INTERFAZ
+        // =============================================
+        function mostrarMensaje(texto, tipo = 'info') {
+            const contenedor = document.getElementById('mensajeEstado');
+            
+            let clase = 'loading';
+            if (tipo === 'error') clase = 'error-message';
+            if (tipo === 'success') clase = 'success-message';
+            
+            contenedor.innerHTML = `<div class="${clase}">${texto}</div>`;
+            
+            // Limpiar mensaje después de 5 segundos si es éxito
+            if (tipo === 'success') {
+                setTimeout(() => {
+                    contenedor.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        // =============================================
+        // ENVIAR DATOS A GOOGLE SHEETS
+        // =============================================
+        async function enviarDatosAGoogleSheets(datos) {
+            console.log('🌐 Enviando a:', GOOGLE_SCRIPT_URL);
+            console.log('📦 Payload:', JSON.stringify({ action: 'registrarServicio', data: datos }));
+            console.log('⏳ Enviando petición POST...');
+            
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'registrarServicio',
+                        data: datos
+                    })
+                });
+
+                console.log('✅ Respuesta recibida. Status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('📨 Resultado:', JSON.stringify(result));
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Error desconocido del servidor');
+                }
+
+                return result;
+            } catch (error) {
+                console.error('💥 ERROR de conexión:', error);
+                throw error;
+            }
+        }
+
+        // =============================================
+        // MANEJAR ENVÍO DEL FORMULARIO
+        // =============================================
+        tg.MainButton.onClick(async function() {
+            const form = document.getElementById('formularioServicio');
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const formData = new FormData(form);
+            const datos = Object.fromEntries(formData.entries());
+
+            console.log('📝 Formulario enviado');
+            console.log('📊 Datos del formulario:', JSON.stringify(datos));
+
+            tg.MainButton.showProgress();
+            mostrarMensaje('Enviando datos...', 'info');
+
+            try {
+                const resultado = await enviarDatosAGoogleSheets(datos);
+                
+                if (resultado.success) {
+                    console.log('✅ Servicio registrado con ID:', resultado.idServicio);
+                    mostrarMensaje(`✅ Servicio #${resultado.idServicio} registrado exitosamente`, 'success');
+                    
+                    // Notificar a Telegram que todo salió bien
+                    tg.showAlert('✅ Servicio registrado correctamente', function() {
+                        tg.close();
+                    });
+                } else {
+                    throw new Error(resultado.error || 'Error desconocido');
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                mostrarMensaje(`❌ Error: ${error.message}`, 'error');
+                tg.showAlert('❌ Error al registrar el servicio: ' + error.message);
+            } finally {
+                tg.MainButton.hideProgress();
+            }
+        });
+
+        // =============================================
+        // INICIAR LA APLICACIÓN
+        // =============================================
+        window.addEventListener('DOMContentLoaded', inicializarApp);
+        
+        console.log('🚀 App iniciada');
+        console.log('📍 URL configurada:', GOOGLE_SCRIPT_URL !== 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI' ? 'SÍ ✅' : 'NO ❌');
+    </script>
+</body>
+</html>
