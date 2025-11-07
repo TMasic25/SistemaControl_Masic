@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Servicios - Transportes Masic</title>
+    <title>Registro de Servicios - Torres VIP</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -176,6 +176,11 @@
                     <option value="">Cargando formas de pago...</option>
                 </select>
             </div>
+
+            <!-- Botón para cuando NO está en Telegram -->
+            <button type="button" id="btnRegistrarWeb" style="display: none; width: 100%; padding: 16px; background: #3390ec; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px;">
+                📝 Registrar Servicio
+            </button>
         </form>
     </div>
 
@@ -183,7 +188,7 @@
         // =============================================
         // CONFIGURACIÓN
         // =============================================
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzu6qesXwlj_bvFxyOXg4e33ccx5snD623oH_3krfWycw0qgyJTreDOv4OAc_bf2FT1/exec';
+        const GOOGLE_SCRIPT_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI';
         
         let tg = window.Telegram.WebApp;
         tg.expand();
@@ -449,7 +454,61 @@
         // =============================================
         // INICIAR LA APLICACIÓN
         // =============================================
-        window.addEventListener('DOMContentLoaded', inicializarApp);
+        window.addEventListener('DOMContentLoaded', () => {
+            // Detectar si está en Telegram o en navegador web
+            const enTelegram = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
+            
+            if (!enTelegram) {
+                // Si NO está en Telegram, mostrar botón web
+                const btnWeb = document.getElementById('btnRegistrarWeb');
+                btnWeb.style.display = 'block';
+                
+                // Manejar click del botón web
+                btnWeb.addEventListener('click', async function() {
+                    const form = document.getElementById('formularioServicio');
+                    
+                    if (!form.checkValidity()) {
+                        form.reportValidity();
+                        return;
+                    }
+
+                    const formData = new FormData(form);
+                    const datos = Object.fromEntries(formData.entries());
+
+                    console.log('📝 Formulario enviado desde WEB');
+                    console.log('📊 Datos del formulario:', JSON.stringify(datos));
+
+                    btnWeb.disabled = true;
+                    btnWeb.textContent = '⏳ Registrando...';
+                    mostrarMensaje('Enviando datos...', 'info');
+
+                    try {
+                        const resultado = await enviarDatosAGoogleSheets(datos);
+                        
+                        if (resultado.success) {
+                            console.log('✅ Servicio registrado con ID:', resultado.idServicio);
+                            mostrarMensaje(`✅ Servicio #${resultado.idServicio} registrado exitosamente`, 'success');
+                            
+                            // Limpiar formulario
+                            form.reset();
+                            
+                            alert('✅ Servicio registrado correctamente\n\nID: ' + resultado.idServicio);
+                        } else {
+                            throw new Error(resultado.error || 'Error desconocido');
+                        }
+                    } catch (error) {
+                        console.error('❌ Error:', error);
+                        mostrarMensaje(`❌ Error: ${error.message}`, 'error');
+                        alert('❌ Error al registrar el servicio:\n\n' + error.message);
+                    } finally {
+                        btnWeb.disabled = false;
+                        btnWeb.textContent = '📝 Registrar Servicio';
+                    }
+                });
+            }
+            
+            inicializarApp();
+        });
         
         console.log('🚀 App iniciada');
         console.log('📍 URL configurada:', GOOGLE_SCRIPT_URL !== 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI' ? 'SÍ ✅' : 'NO ❌');
