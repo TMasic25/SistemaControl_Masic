@@ -55,7 +55,7 @@ const CONFIG = {
 };
 
 // URL del Google Apps Script (la crearemos después)
-const SCRIPT_URL = "______";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGBwFkbRP-y6K_qD1plEgfOlCm__ePaOZ8WZxCXCQcFyewkZy-RkvlKjyvizP1Mkua/exec";
 
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
