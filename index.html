@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Servicios - Transportes Masic</title>
+    <title>Registro de Servicios - Torres VIP</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -183,7 +183,7 @@
         // =============================================
         // CONFIGURACIÓN
         // =============================================
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVdjkwiYDLxJG8l103oWJtHQW4Bck4u9xzSRxcfe9WIEGJqQYiJp6zIrnMhcRgi65p/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzu6qesXwlj_bvFxyOXg4e33ccx5snD623oH_3krfWycw0qgyJTreDOv4OAc_bf2FT1/exec';
         
         let tg = window.Telegram.WebApp;
         tg.expand();
@@ -203,20 +203,31 @@
         // FUNCIONES PARA CARGAR DATOS
         // =============================================
         async function cargarDatosDesdeGoogleSheets(action) {
+            console.log(`🔍 Intentando cargar: ${action}`);
+            console.log(`📡 URL del script: ${GOOGLE_SCRIPT_URL}`);
+            
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ action: action })
+                // SOLUCIÓN CORS: Usar GET en lugar de POST
+                const url = `${GOOGLE_SCRIPT_URL}?action=${encodeURIComponent(action)}`;
+                console.log(`📤 URL completa:`, url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    redirect: 'follow'
                 });
 
+                console.log(`📥 Respuesta recibida. Status: ${response.status}`);
+                console.log(`📥 Status text: ${response.statusText}`);
+
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
                 }
 
-                const result = await response.json();
+                const responseText = await response.text();
+                console.log(`📄 Respuesta (texto):`, responseText.substring(0, 200));
+                
+                const result = JSON.parse(responseText);
+                console.log(`✅ Respuesta parseada:`, result);
                 
                 if (!result.success) {
                     throw new Error(result.error || 'Error desconocido');
@@ -225,6 +236,7 @@
                 return result.data;
             } catch (error) {
                 console.error(`❌ Error al cargar ${action}:`, error);
+                console.error(`❌ Error completo:`, error.stack);
                 throw error;
             }
         }
@@ -345,19 +357,27 @@
         // =============================================
         async function enviarDatosAGoogleSheets(datos) {
             console.log('🌐 Enviando a:', GOOGLE_SCRIPT_URL);
-            console.log('📦 Payload:', JSON.stringify({ action: 'registrarServicio', data: datos }));
+            console.log('📦 Datos a enviar:', JSON.stringify(datos));
             console.log('⏳ Enviando petición POST...');
             
             try {
+                // Crear URLSearchParams para evitar CORS
+                const formData = new URLSearchParams();
+                formData.append('action', 'registrarServicio');
+                formData.append('cliente', datos.cliente);
+                formData.append('vehiculo', datos.vehiculo);
+                formData.append('conductor', datos.conductor);
+                formData.append('tipoServicio', datos.tipoServicio);
+                formData.append('origen', datos.origen);
+                formData.append('destino', datos.destino);
+                formData.append('km', datos.km);
+                formData.append('pasajeros', datos.pasajeros);
+                formData.append('monto', datos.monto);
+                formData.append('formaPago', datos.formaPago);
+                
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'registrarServicio',
-                        data: datos
-                    })
+                    body: formData
                 });
 
                 console.log('✅ Respuesta recibida. Status:', response.status);
@@ -366,8 +386,11 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const result = await response.json();
-                console.log('📨 Resultado:', JSON.stringify(result));
+                const responseText = await response.text();
+                console.log('📨 Respuesta (texto):', responseText);
+                
+                const result = JSON.parse(responseText);
+                console.log('📨 Resultado parseado:', JSON.stringify(result));
 
                 if (!result.success) {
                     throw new Error(result.error || 'Error desconocido del servidor');
