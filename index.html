@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Servicios - Transportes Masic</title>
+    <title>Registro de Servicios - Torres VIP</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -188,7 +188,7 @@
         // =============================================
         // CONFIGURACIÓN
         // =============================================
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzu6qesXwlj_bvFxyOXg4e33ccx5snD623oH_3krfWycw0qgyJTreDOv4OAc_bf2FT1/exec';
+        const GOOGLE_SCRIPT_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI';
         
         let tg = window.Telegram.WebApp;
         tg.expand();
@@ -252,21 +252,28 @@
             
             datos.forEach(item => {
                 const option = document.createElement('option');
-                option.value = item[valorKey];
                 
                 // Formateo especial según el tipo de dato
-                if (selectId === 'vehiculo') {
-                    // Para vehículos: "PATENTE - Marca Modelo"
+                if (selectId === 'cliente') {
+                    // VALOR = Código del cliente (CLI006)
+                    // TEXTO = Nombre para mostrar
+                    option.value = item.id || item.codigo;
+                    option.textContent = item.nombre;
+                } else if (selectId === 'vehiculo') {
+                    // VALOR = Código del vehículo (VEH001)
+                    // TEXTO = "PATENTE - Marca Modelo"
+                    option.value = item.id || item.codigo;
                     option.textContent = `${item.patente} - ${item.marca} ${item.modelo}`.trim();
                 } else if (selectId === 'conductor') {
-                    // Para conductores: "Nombre (RUT)"
+                    // VALOR = Código del conductor (CON001)
+                    // TEXTO = "Nombre (RUT)"
+                    option.value = item.id || item.codigo;
                     option.textContent = item.nombre + (item.rut ? ` (${item.rut})` : '');
-                } else if (selectId === 'cliente') {
-                    // Para clientes: "Nombre"
-                    option.textContent = item.nombre;
                 } else if (textoExtra) {
+                    option.value = item[valorKey];
                     option.textContent = `${item[textoKey]} - ${item[textoExtra]}`;
                 } else {
+                    option.value = item[valorKey];
                     option.textContent = item[textoKey];
                 }
                 
@@ -315,9 +322,9 @@
                 datosFormasPago = formasPago;
 
                 // Llenar los selects
-                llenarSelect('cliente', clientes, 'nombre', 'nombre');
-                llenarSelect('vehiculo', vehiculos, 'patente', 'patente');
-                llenarSelect('conductor', conductores, 'nombre', 'nombre');
+                llenarSelect('cliente', clientes);
+                llenarSelect('vehiculo', vehiculos);
+                llenarSelect('conductor', conductores);
                 llenarSelect('tipoServicio', tiposServicio, 'codigo', 'descripcion');
                 llenarSelect('formaPago', formasPago, 'codigo', 'descripcion');
 
