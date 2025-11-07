@@ -692,23 +692,186 @@
             </div>
 
             <!-- ============================================ -->
-            <!-- VISTA: INGRESOS (Placeholder) -->
+            <!-- VISTA: INGRESOS -->
             <!-- ============================================ -->
             <div id="vistaIngresos" class="view">
-                <h2>💰 Registrar Ingreso</h2>
-                <p style="padding: 40px; text-align: center; color: #999;">
-                    Formulario de ingresos - En desarrollo
-                </p>
+                <h2 style="margin-bottom: 20px;">💰 Registrar Ingreso</h2>
+                
+                <div id="mensajeIngreso"></div>
+
+                <form id="formularioIngreso">
+                    <div class="form-group">
+                        <label for="ingresoFecha">Fecha <span class="required">*</span></label>
+                        <input type="date" id="ingresoFecha" name="fecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoTipoDocumento">Tipo de Documento <span class="required">*</span></label>
+                        <select id="ingresoTipoDocumento" name="tipoDocumento" required>
+                            <option value="">Selecciona</option>
+                            <option value="Factura">Factura</option>
+                            <option value="Boleta">Boleta</option>
+                            <option value="Nota de Crédito">Nota de Crédito</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoNumeroDocumento">N° Documento <span class="required">*</span></label>
+                        <input type="text" id="ingresoNumeroDocumento" name="numeroDocumento" placeholder="Ej: 12345" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoCliente">Cliente <span class="required">*</span></label>
+                        <select id="ingresoCliente" name="cliente" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoPeriodoFacturado">Periodo Facturado</label>
+                        <input type="text" id="ingresoPeriodoFacturado" name="periodoFacturado" placeholder="Ej: Octubre 2025">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoFechaVencimiento">Fecha Vencimiento</label>
+                        <input type="date" id="ingresoFechaVencimiento" name="fechaVencimiento">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoValorNeto">Valor Neto ($) <span class="required">*</span></label>
+                        <input type="number" id="ingresoValorNeto" name="valorNeto" placeholder="Ej: 100000" min="0" required>
+                        <small style="color: #666;">El IVA (19%) se calculará automáticamente</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoFormaPago">Forma de Pago</label>
+                        <select id="ingresoFormaPago" name="formaPago">
+                            <option value="">Selecciona</option>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                            <option value="Crédito">Crédito</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoServiciosAsociados">Servicios Asociados</label>
+                        <input type="text" id="ingresoServiciosAsociados" name="serviciosAsociados" placeholder="Ej: SER0041, SER0042">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoObservaciones">Observaciones</label>
+                        <textarea id="ingresoObservaciones" name="observaciones" placeholder="Notas adicionales..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="btnIngreso">
+                        💰 Registrar Ingreso
+                    </button>
+                </form>
             </div>
 
             <!-- ============================================ -->
-            <!-- VISTA: GASTOS (Placeholder) -->
+            <!-- VISTA: GASTOS -->
             <!-- ============================================ -->
             <div id="vistaGastos" class="view">
-                <h2>💸 Registrar Gasto</h2>
-                <p style="padding: 40px; text-align: center; color: #999;">
-                    Formulario de gastos - En desarrollo
-                </p>
+                <h2 style="margin-bottom: 20px;">💸 Registrar Gasto</h2>
+                
+                <div id="mensajeGasto"></div>
+
+                <form id="formularioGasto">
+                    <div class="form-group">
+                        <label for="gastoFecha">Fecha <span class="required">*</span></label>
+                        <input type="date" id="gastoFecha" name="fecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoTipoDocumento">Tipo de Documento <span class="required">*</span></label>
+                        <select id="gastoTipoDocumento" name="tipoDocumento" required>
+                            <option value="">Selecciona</option>
+                            <option value="Factura">Factura</option>
+                            <option value="Boleta">Boleta</option>
+                            <option value="Recibo">Recibo</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoNumeroDocumento">N° Documento <span class="required">*</span></label>
+                        <input type="text" id="gastoNumeroDocumento" name="numeroDocumento" placeholder="Ej: 98765" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoProveedor">Proveedor <span class="required">*</span></label>
+                        <input type="text" id="gastoProveedor" name="proveedor" placeholder="Ej: Copec" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoRutProveedor">RUT Proveedor</label>
+                        <input type="text" id="gastoRutProveedor" name="rutProveedor" placeholder="Ej: 76.123.456-7">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoCategoria">Categoría <span class="required">*</span></label>
+                        <select id="gastoCategoria" name="categoria" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoDescripcion">Descripción <span class="required">*</span></label>
+                        <input type="text" id="gastoDescripcion" name="descripcion" placeholder="Ej: Carga de combustible" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoVehiculo">Vehículo Asociado</label>
+                        <select id="gastoVehiculo" name="vehiculo">
+                            <option value="">No aplica</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoValorNeto">Valor Neto ($) <span class="required">*</span></label>
+                        <input type="number" id="gastoValorNeto" name="valorNeto" placeholder="Ej: 50000" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoConIVA">¿Tiene IVA Recuperable? <span class="required">*</span></label>
+                        <select id="gastoConIVA" name="conIVA" required>
+                            <option value="">Selecciona</option>
+                            <option value="si">Sí (19%)</option>
+                            <option value="no">No</option>
+                        </select>
+                        <small style="color: #666;">Si tiene IVA, se calculará automáticamente el 19%</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoTipoGasto">Tipo de Gasto <span class="required">*</span></label>
+                        <select id="gastoTipoGasto" name="tipoGasto" required>
+                            <option value="">Selecciona</option>
+                            <option value="Fijo">Fijo</option>
+                            <option value="Variable">Variable</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoDeducible">¿Es Deducible Tributariamente? <span class="required">*</span></label>
+                        <select id="gastoDeducible" name="deducible" required>
+                            <option value="">Selecciona</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoObservaciones">Observaciones</label>
+                        <textarea id="gastoObservaciones" name="observaciones" placeholder="Notas adicionales..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="btnGasto">
+                        💸 Registrar Gasto
+                    </button>
+                </form>
             </div>
 
         </div>
@@ -718,7 +881,7 @@
         // =============================================
         // CONFIGURACIÓN
         // =============================================
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhbzvaBIMjKYM6-ix14zxbUo9x71slgPgybTUMtQ4NwRDtT1S_oqSA1ihdJfvzuKbi/exec';
+        const GOOGLE_SCRIPT_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI';
         
         let tg = window.Telegram.WebApp;
         tg.expand();
@@ -810,12 +973,13 @@
 
         async function inicializarDatos() {
             try {
-                const [clientes, vehiculos, conductores, tiposServicio, formasPago] = await Promise.all([
+                const [clientes, vehiculos, conductores, tiposServicio, formasPago, categorias] = await Promise.all([
                     cargarDatosDesdeGoogleSheets('obtenerClientes'),
                     cargarDatosDesdeGoogleSheets('obtenerVehiculos'),
                     cargarDatosDesdeGoogleSheets('obtenerConductores'),
                     cargarDatosDesdeGoogleSheets('obtenerTiposServicio'),
-                    cargarDatosDesdeGoogleSheets('obtenerFormasPago')
+                    cargarDatosDesdeGoogleSheets('obtenerFormasPago'),
+                    cargarDatosDesdeGoogleSheets('obtenerCategorias')
                 ]);
 
                 llenarSelect('cliente', clientes);
@@ -823,8 +987,18 @@
                 llenarSelect('conductor', conductores);
                 llenarSelect('tipoServicio', tiposServicio);
                 llenarSelect('formaPago', formasPago);
+                
+                // Para formulario de ingresos
+                llenarSelect('ingresoCliente', clientes);
+                
+                // Para formulario de gastos
+                llenarSelect('gastoCategoria', categorias);
+                llenarSelect('gastoVehiculo', vehiculos);
 
                 console.log('✅ Datos cargados');
+                
+                // Cargar dashboard
+                await cargarDashboard();
             } catch (error) {
                 console.error('❌ Error:', error);
             }
@@ -976,6 +1150,132 @@
                 btn.textContent = '📝 Registrar Servicio';
             }
         });
+
+        // INGRESO
+        document.getElementById('formularioIngreso').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnIngreso');
+            btn.disabled = true;
+            btn.textContent = '⏳ Registrando...';
+            
+            try {
+                const formData = new FormData(e.target);
+                const datos = Object.fromEntries(formData.entries());
+                
+                // Convertir fechas de yyyy-mm-dd a dd/mm/yyyy
+                if (datos.fecha) {
+                    const [año, mes, dia] = datos.fecha.split('-');
+                    datos.fecha = `${dia}/${mes}/${año}`;
+                }
+                if (datos.fechaVencimiento) {
+                    const [año, mes, dia] = datos.fechaVencimiento.split('-');
+                    datos.fechaVencimiento = `${dia}/${mes}/${año}`;
+                }
+                
+                const resultado = await enviarDatos('registrarIngreso', datos);
+                
+                mostrarMensaje('mensajeIngreso', `✅ Ingreso ${resultado.idIngreso} registrado | Total: $${resultado.total.toLocaleString('es-CL')}`, 'success');
+                e.target.reset();
+                
+                await cargarDashboard(); // Actualizar dashboard
+                setTimeout(() => mostrarVista('vistaDashboard'), 2000);
+            } catch (error) {
+                mostrarMensaje('mensajeIngreso', `❌ Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💰 Registrar Ingreso';
+            }
+        });
+
+        // GASTO
+        document.getElementById('formularioGasto').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnGasto');
+            btn.disabled = true;
+            btn.textContent = '⏳ Registrando...';
+            
+            try {
+                const formData = new FormData(e.target);
+                const datos = Object.fromEntries(formData.entries());
+                
+                // Convertir fecha de yyyy-mm-dd a dd/mm/yyyy
+                if (datos.fecha) {
+                    const [año, mes, dia] = datos.fecha.split('-');
+                    datos.fecha = `${dia}/${mes}/${año}`;
+                }
+                
+                const resultado = await enviarDatos('registrarGasto', datos);
+                
+                mostrarMensaje('mensajeGasto', `✅ Gasto ${resultado.idGasto} registrado | Total: $${resultado.total.toLocaleString('es-CL')}`, 'success');
+                e.target.reset();
+                
+                await cargarDashboard(); // Actualizar dashboard
+                setTimeout(() => mostrarVista('vistaDashboard'), 2000);
+            } catch (error) {
+                mostrarMensaje('mensajeGasto', `❌ Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💸 Registrar Gasto';
+            }
+        });
+
+        // =============================================
+        // CARGAR DASHBOARD DINÁMICO
+        // =============================================
+        async function cargarDashboard() {
+            try {
+                const datos = await cargarDatosDesdeGoogleSheets('obtenerDashboard');
+                
+                if (!datos || !datos.kpis) {
+                    console.error('❌ No se pudieron cargar datos del dashboard');
+                    return;
+                }
+                
+                const kpis = datos.kpis;
+                
+                // Actualizar KPIs
+                document.querySelector('.kpi-card:nth-child(1) .kpi-value').textContent = 
+                    `$${Math.round(kpis.ingresosMesActual).toLocaleString('es-CL')}`;
+                document.querySelector('.kpi-card:nth-child(1) .kpi-change').textContent = 
+                    `vs. Mes Anterior: ${kpis.variacionIngresos}%`;
+                document.querySelector('.kpi-card:nth-child(1) .kpi-change').className = 
+                    `kpi-change ${kpis.variacionIngresos >= 0 ? 'positive' : 'negative'}`;
+                
+                document.querySelector('.kpi-card:nth-child(2) .kpi-value').textContent = 
+                    kpis.serviciosMesActual;
+                document.querySelector('.kpi-card:nth-child(2) .kpi-change').textContent = 
+                    `vs. Mes Anterior: ${kpis.variacionServicios}%`;
+                document.querySelector('.kpi-card:nth-child(2) .kpi-change').className = 
+                    `kpi-change ${kpis.variacionServicios >= 0 ? 'positive' : 'negative'}`;
+                
+                document.querySelector('.kpi-card:nth-child(3) .kpi-value').textContent = 
+                    `${kpis.margenNeto}%`;
+                document.querySelector('.kpi-card:nth-child(3) .kpi-change').textContent = 
+                    `vs. Mes Anterior: ${kpis.variacionMargen}%`;
+                document.querySelector('.kpi-card:nth-child(3) .kpi-change').className = 
+                    `kpi-change ${kpis.variacionMargen >= 0 ? 'positive' : 'negative'}`;
+                
+                // Actualizar alertas
+                if (datos.alertas && datos.alertas.length > 0) {
+                    const tbody = document.querySelector('.alert-table tbody');
+                    tbody.innerHTML = '';
+                    
+                    datos.alertas.forEach(alerta => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="alert-type">${alerta.tipo}</td>
+                            <td style="text-align: center;">${alerta.detalle}</td>
+                            <td>${alerta.accion}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+                
+                console.log('✅ Dashboard actualizado');
+            } catch (error) {
+                console.error('❌ Error al cargar dashboard:', error);
+            }
+        }
 
         // =============================================
         // INICIALIZACIÓN
