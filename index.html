@@ -183,7 +183,7 @@
         // =============================================
         // CONFIGURACIÓN
         // =============================================
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVdjkwiYDLxJG8l103oWJtHQW4Bck4u9xzSRxcfe9WIEGJqQYiJp6zIrnMhcRgi65p/exec';
+        const GOOGLE_SCRIPT_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI';
         
         let tg = window.Telegram.WebApp;
         tg.expand();
@@ -237,7 +237,17 @@
                 const option = document.createElement('option');
                 option.value = item[valorKey];
                 
-                if (textoExtra) {
+                // Formateo especial según el tipo de dato
+                if (selectId === 'vehiculo') {
+                    // Para vehículos: "PATENTE - Marca Modelo"
+                    option.textContent = `${item.patente} - ${item.marca} ${item.modelo}`.trim();
+                } else if (selectId === 'conductor') {
+                    // Para conductores: "Nombre (RUT)"
+                    option.textContent = item.nombre + (item.rut ? ` (${item.rut})` : '');
+                } else if (selectId === 'cliente') {
+                    // Para clientes: "Nombre"
+                    option.textContent = item.nombre;
+                } else if (textoExtra) {
                     option.textContent = `${item[textoKey]} - ${item[textoExtra]}`;
                 } else {
                     option.textContent = item[textoKey];
@@ -289,7 +299,7 @@
 
                 // Llenar los selects
                 llenarSelect('cliente', clientes, 'nombre', 'nombre');
-                llenarSelect('vehiculo', vehiculos, 'patente', 'patente', 'marca');
+                llenarSelect('vehiculo', vehiculos, 'patente', 'patente');
                 llenarSelect('conductor', conductores, 'nombre', 'nombre');
                 llenarSelect('tipoServicio', tiposServicio, 'codigo', 'descripcion');
                 llenarSelect('formaPago', formasPago, 'codigo', 'descripcion');
