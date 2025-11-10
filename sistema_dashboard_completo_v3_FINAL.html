@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Control Interno - Transportes Masic</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ECEFF1;
+            color: #000;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #0B5F87 0%, #1E88B5 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            width: 200px;
+            height: 80px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* LAYOUT PRINCIPAL */
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 120px);
+        }
+
+        /* MENÚ LATERAL */
+        .sidebar {
+            width: 200px;
+            background: #f5f5f5;
+            padding: 20px 10px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 15px;
+            padding-left: 10px;
+        }
+
+        .menu-button {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #0B5F87 0%, #1E88B5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: left;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2), inset 0 -3px 0 rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .menu-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3), inset 0 -3px 0 rgba(0,0,0,0.2);
+        }
+
+        .menu-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 -1px 0 rgba(0,0,0,0.2);
+        }
+
+        .menu-button.active {
+            background: linear-gradient(135deg, #094a6d 0%, #176a95 100%);
+        }
+
+        /* ÁREA DE CONTENIDO */
+        .content-area {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #0B5F87;
+        }
+
+        .tab {
+            padding: 12px 30px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: white;
+            color: #0B5F87;
+            border-bottom: 3px solid #0B5F87;
+        }
+
+        /* VISTAS */
+        .view {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* DASHBOARD */
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 15px;
+            background: #0B5F87;
+            color: white;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 5px solid #094a6d;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .kpi-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0B5F87;
+            margin-bottom: 5px;
+        }
+
+        .kpi-change {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .kpi-change.positive {
+            color: #27ae60;
+        }
+
+        .kpi-change.negative {
+            color: #e74c3c;
+        }
+
+        /* ALERTAS */
+        .alert-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .alert-table th {
+            background: #0B5F87;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .alert-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .alert-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .alert-type {
+            font-weight: bold;
+        }
+
+        /* REPORTERÍA */
+        .report-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .report-button {
+            padding: 20px;
+            background: linear-gradient(135deg, #0B5F87 0%, #1E88B5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2), inset 0 -3px 0 rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .report-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        /* FORMULARIOS */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #0B5F87;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 16px;
+            background: #0B5F87;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .submit-button:hover {
+            background: #094a6d;
+        }
+
+        .submit-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* MENSAJES */
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .report-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">
+            <img src="Logo_Masic.png" alt="Masic Transportes" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=color:#0B5F87;font-size:24px;font-weight:bold>MASIC</span>'">
+        </div>
+        <div class="header-title">Sistema Control Interno – Transportes Masic</div>
+    </div>
+
+    <!-- LAYOUT PRINCIPAL -->
+    <div class="main-container">
+        <!-- MENÚ LATERAL -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Registros</div>
+                <button class="menu-button" onclick="mostrarVista('vistaVehiculos')">🚗 Vehículos</button>
+                <button class="menu-button" onclick="mostrarVista('vistaClientes')">👤 Clientes</button>
+                <button class="menu-button" onclick="mostrarVista('vistaConductores')">👨‍✈️ Conductores</button>
+                <button class="menu-button" onclick="mostrarVista('vistaServicios')">📝 Servicios</button>
+                <button class="menu-button" onclick="mostrarVista('vistaIngresos')">💰 Ingresos</button>
+                <button class="menu-button" onclick="mostrarVista('vistaGastos')">💸 Gastos</button>
+            </div>
+        </div>
+
+        <!-- ÁREA DE CONTENIDO -->
+        <div class="content-area">
+            <!-- TABS -->
+            <div class="tabs">
+                <button class="tab active" onclick="mostrarVista('vistaDashboard')">Dashboard</button>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- VISTA: DASHBOARD -->
+            <!-- ============================================ -->
+            <div id="vistaDashboard" class="view active">
+                <!-- KPI PRINCIPALES -->
+                <div class="section-title">KPI Principales</div>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Mes Actual</div>
+                        <div class="kpi-value">$430.118</div>
+                        <div class="kpi-change negative">vs. Mes Anterior: -87%</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-label">Servicios Realizados</div>
+                        <div class="kpi-value" id="totalServicios">37</div>
+                        <div class="kpi-change">vs. Mes Anterior: XX%</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-label">Margen Neto</div>
+                        <div class="kpi-value">-50,84%</div>
+                        <div class="kpi-change negative">vs. Mes Anterior: 52,87%</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-label">Gráfico</div>
+                        <div style="text-align: center; padding: 20px; color: #999;">
+                            📊 Gráfico de servicios
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALERTAS Y NOTIFICACIONES -->
+                <div class="section-title">Alertas y Notificaciones</div>
+                
+                <table class="alert-table">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Detalle</th>
+                            <th>Acción Requerida</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="alert-type">Facturas Vencidas</td>
+                            <td style="text-align: center;">X Facturas</td>
+                            <td>Gestionar cobro</td>
+                        </tr>
+                        <tr>
+                            <td class="alert-type">F29 Próximo</td>
+                            <td style="text-align: center;">Vence 20/11/2025</td>
+                            <td>Declarar IVA</td>
+                        </tr>
+                        <tr>
+                            <td class="alert-type">Revisión Técnica</td>
+                            <td style="text-align: center;">0 Vehículos Vencidos</td>
+                            <td>Agendar Revisión</td>
+                        </tr>
+                        <tr>
+                            <td class="alert-type">Mantención</td>
+                            <td style="text-align: center;">2 Vehículos</td>
+                            <td>Programar Servicio</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- REPORTERÍA -->
+                <div class="section-title">Reportería</div>
+                
+                <div class="report-buttons">
+                    <button class="report-button" onclick="alert('Reporte EERR - En desarrollo')">EERR</button>
+                    <button class="report-button" onclick="alert('Reporte IVA - En desarrollo')">IVA</button>
+                    <button class="report-button" onclick="alert('Reporte BALANCE - En desarrollo')">BALANCE</button>
+                    <button class="report-button" onclick="alert('Reporte FLUJO CAJA - En desarrollo')">FLUJO CAJA</button>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- VISTA: VEHÍCULOS -->
+            <!-- ============================================ -->
+            <div id="vistaVehiculos" class="view">
+                <h2 style="margin-bottom: 20px;">🚗 Registrar Vehículo</h2>
+                
+                <div id="mensajeVehiculo"></div>
+
+                <form id="formularioVehiculo">
+                    <div class="form-group">
+                        <label for="vehiculoPatente">Patente <span class="required">*</span></label>
+                        <input type="text" id="vehiculoPatente" name="patente" placeholder="Ej: ABCD12" required style="text-transform: uppercase;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehiculoMarca">Marca <span class="required">*</span></label>
+                        <input type="text" id="vehiculoMarca" name="marca" placeholder="Ej: Mercedes Benz" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehiculoModelo">Modelo <span class="required">*</span></label>
+                        <input type="text" id="vehiculoModelo" name="modelo" placeholder="Ej: Sprinter" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehiculoAño">Año <span class="required">*</span></label>
+                        <input type="number" id="vehiculoAño" name="año" placeholder="Ej: 2020" min="1990" max="2030" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehiculoTipo">Tipo de Vehículo <span class="required">*</span></label>
+                        <select id="vehiculoTipo" name="tipo" required>
+                            <option value="">Selecciona</option>
+                            <option value="Minibus">Minibus</option>
+                            <option value="Van">Van</option>
+                            <option value="Bus">Bus</option>
+                            <option value="Automóvil">Automóvil</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehiculoCapacidad">Capacidad Pasajeros <span class="required">*</span></label>
+                        <input type="number" id="vehiculoCapacidad" name="capacidad" placeholder="Ej: 19" min="1" required>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="btnVehiculo">
+                        🚗 Registrar Vehículo
+                    </button>
+                </form>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- VISTA: CLIENTES -->
+            <!-- ============================================ -->
+            <div id="vistaClientes" class="view">
+                <h2 style="margin-bottom: 20px;">👤 Registrar Cliente</h2>
+                
+                <div id="mensajeCliente"></div>
+
+                <form id="formularioCliente">
+                    <div class="form-group">
+                        <label for="clienteRut">RUT/DNI <span class="required">*</span></label>
+                        <input type="text" id="clienteRut" name="rut" placeholder="Ej: 12.345.678-9" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="clienteTipo">Tipo <span class="required">*</span></label>
+                        <select id="clienteTipo" name="tipo" required>
+                            <option value="">Selecciona</option>
+                            <option value="Empresa">Empresa</option>
+                            <option value="Persona Natural">Persona Natural</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="clienteRazonSocial">Razón Social <span class="required">*</span></label>
+                        <input type="text" id="clienteRazonSocial" name="razonSocial" placeholder="Ej: Hotel SpA" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="clienteNombreFantasia">Nombre Fantasía</label>
+                        <input type="text" id="clienteNombreFantasia" name="nombreFantasia" placeholder="Ej: Hotel Dreams">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="clienteEmail">Email <span class="required">*</span></label>
+                        <input type="email" id="clienteEmail" name="email" placeholder="Ej: contacto@hotel.cl" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="clienteTelefono">Teléfono <span class="required">*</span></label>
+                        <input type="tel" id="clienteTelefono" name="telefono" placeholder="Ej: +56912345678" required>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="btnCliente">
+                        👤 Registrar Cliente
+                    </button>
+                </form>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- VISTA: CONDUCTORES -->
+            <!-- ============================================ -->
+            <div id="vistaConductores" class="view">
+                <h2 style="margin-bottom: 20px;">👨‍✈️ Registrar Conductor</h2>
+                
+                <div id="mensajeConductor"></div>
+
+                <form id="formularioConductor">
+                    <div class="form-group">
+                        <label for="conductorRut">RUT <span class="required">*</span></label>
+                        <input type="text" id="conductorRut" name="rut" placeholder="Ej: 12.345.678-9" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="conductorNombre">Nombre Completo <span class="required">*</span></label>
+                        <input type="text" id="conductorNombre" name="nombre" placeholder="Ej: Juan Pérez" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="conductorTelefono">Teléfono <span class="required">*</span></label>
+                        <input type="tel" id="conductorTelefono" name="telefono" placeholder="Ej: +56987654321" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="conductorLicencia">Licencia de Conducir <span class="required">*</span></label>
+                        <select id="conductorLicencia" name="licencia" required>
+                            <option value="">Selecciona</option>
+                            <option value="A1">Clase A1</option>
+                            <option value="A2">Clase A2</option>
+                            <option value="A3">Clase A3</option>
+                            <option value="A4">Clase A4</option>
+                            <option value="A5">Clase A5</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="btnConductor">
+                        👨‍✈️ Registrar Conductor
+                    </button>
+                </form>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- VISTA: SERVICIOS -->
+            <!-- ============================================ -->
+            <div id="vistaServicios" class="view">
+                <h2 style="margin-bottom: 20px;">📝 Registrar Servicio</h2>
+                
+                <div id="mensajeServicio"></div>
+
+                <form id="formularioServicio">
+                    <div class="form-group">
+                        <label for="cliente">Cliente <span class="required">*</span></label>
+                        <select id="cliente" name="cliente" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehiculo">Vehículo <span class="required">*</span></label>
+                        <select id="vehiculo" name="vehiculo" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="conductor">Conductor <span class="required">*</span></label>
+                        <select id="conductor" name="conductor" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipoServicio">Tipo de Servicio <span class="required">*</span></label>
+                        <select id="tipoServicio" name="tipoServicio" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="origen">Origen <span class="required">*</span></label>
+                        <input type="text" id="origen" name="origen" placeholder="Ej: Aeropuerto" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="destino">Destino <span class="required">*</span></label>
+                        <input type="text" id="destino" name="destino" placeholder="Ej: Hotel" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="km">Kilómetros <span class="required">*</span></label>
+                        <input type="number" id="km" name="km" placeholder="Ej: 25" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pasajeros">Pasajeros <span class="required">*</span></label>
+                        <input type="number" id="pasajeros" name="pasajeros" placeholder="Ej: 4" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="monto">Monto ($) <span class="required">*</span></label>
+                        <input type="number" id="monto" name="monto" placeholder="Ej: 35000" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="formaPago">Forma de Pago <span class="required">*</span></label>
+                        <select id="formaPago" name="formaPago" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="btnServicio">
+                        📝 Registrar Servicio
+                    </button>
+                </form>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- VISTA: INGRESOS -->
+            <!-- ============================================ -->
+            <div id="vistaIngresos" class="view">
+                <h2 style="margin-bottom: 20px;">💰 Registrar Ingreso</h2>
+                
+                <div id="mensajeIngreso"></div>
+
+                <form id="formularioIngreso">
+                    <div class="form-group">
+                        <label for="ingresoFecha">Fecha <span class="required">*</span></label>
+                        <input type="date" id="ingresoFecha" name="fecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoTipoDocumento">Tipo de Documento <span class="required">*</span></label>
+                        <select id="ingresoTipoDocumento" name="tipoDocumento" required>
+                            <option value="">Selecciona</option>
+                            <option value="Factura">Factura</option>
+                            <option value="Boleta">Boleta</option>
+                            <option value="Nota de Crédito">Nota de Crédito</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoNumeroDocumento">N° Documento <span class="required">*</span></label>
+                        <input type="text" id="ingresoNumeroDocumento" name="numeroDocumento" placeholder="Ej: 12345" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoCliente">Cliente <span class="required">*</span></label>
+                        <select id="ingresoCliente" name="cliente" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoPeriodoFacturado">Periodo Facturado</label>
+                        <input type="text" id="ingresoPeriodoFacturado" name="periodoFacturado" placeholder="Ej: Octubre 2025">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoFechaVencimiento">Fecha Vencimiento</label>
+                        <input type="date" id="ingresoFechaVencimiento" name="fechaVencimiento">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoValorNeto">Valor Neto ($) <span class="required">*</span></label>
+                        <input type="number" id="ingresoValorNeto" name="valorNeto" placeholder="Ej: 100000" min="0" required>
+                        <small style="color: #666;">El IVA (19%) se calculará automáticamente</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoFormaPago">Forma de Pago</label>
+                        <select id="ingresoFormaPago" name="formaPago">
+                            <option value="">Selecciona</option>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                            <option value="Crédito">Crédito</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoServiciosAsociados">Servicios Asociados</label>
+                        <input type="text" id="ingresoServiciosAsociados" name="serviciosAsociados" placeholder="Ej: SER0041, SER0042">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingresoObservaciones">Observaciones</label>
+                        <textarea id="ingresoObservaciones" name="observaciones" placeholder="Notas adicionales..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="btnIngreso">
+                        💰 Registrar Ingreso
+                    </button>
+                </form>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- VISTA: GASTOS -->
+            <!-- ============================================ -->
+            <div id="vistaGastos" class="view">
+                <h2 style="margin-bottom: 20px;">💸 Registrar Gasto</h2>
+                
+                <div id="mensajeGasto"></div>
+
+                <form id="formularioGasto">
+                    <div class="form-group">
+                        <label for="gastoFecha">Fecha <span class="required">*</span></label>
+                        <input type="date" id="gastoFecha" name="fecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoTipoDocumento">Tipo de Documento <span class="required">*</span></label>
+                        <select id="gastoTipoDocumento" name="tipoDocumento" required>
+                            <option value="">Selecciona</option>
+                            <option value="Factura">Factura</option>
+                            <option value="Boleta">Boleta</option>
+                            <option value="Recibo">Recibo</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoNumeroDocumento">N° Documento <span class="required">*</span></label>
+                        <input type="text" id="gastoNumeroDocumento" name="numeroDocumento" placeholder="Ej: 98765" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoProveedor">Proveedor <span class="required">*</span></label>
+                        <input type="text" id="gastoProveedor" name="proveedor" placeholder="Ej: Copec" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoRutProveedor">RUT Proveedor</label>
+                        <input type="text" id="gastoRutProveedor" name="rutProveedor" placeholder="Ej: 76.123.456-7">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoCategoria">Categoría <span class="required">*</span></label>
+                        <select id="gastoCategoria" name="categoria" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoDescripcion">Descripción <span class="required">*</span></label>
+                        <input type="text" id="gastoDescripcion" name="descripcion" placeholder="Ej: Carga de combustible" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoVehiculo">Vehículo Asociado</label>
+                        <select id="gastoVehiculo" name="vehiculo">
+                            <option value="">No aplica</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoValorNeto">Valor Neto ($) <span class="required">*</span></label>
+                        <input type="number" id="gastoValorNeto" name="valorNeto" placeholder="Ej: 50000" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoConIVA">¿Tiene IVA Recuperable? <span class="required">*</span></label>
+                        <select id="gastoConIVA" name="conIVA" required>
+                            <option value="">Selecciona</option>
+                            <option value="si">Sí (19%)</option>
+                            <option value="no">No</option>
+                        </select>
+                        <small style="color: #666;">Si tiene IVA, se calculará automáticamente el 19%</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoTipoGasto">Tipo de Gasto <span class="required">*</span></label>
+                        <select id="gastoTipoGasto" name="tipoGasto" required>
+                            <option value="">Selecciona</option>
+                            <option value="Fijo">Fijo</option>
+                            <option value="Variable">Variable</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoDeducible">¿Es Deducible Tributariamente? <span class="required">*</span></label>
+                        <select id="gastoDeducible" name="deducible" required>
+                            <option value="">Selecciona</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gastoObservaciones">Observaciones</label>
+                        <textarea id="gastoObservaciones" name="observaciones" placeholder="Notas adicionales..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="btnGasto">
+                        💸 Registrar Gasto
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // =============================================
+        // CONFIGURACIÓN
+        // =============================================
+        const GOOGLE_SCRIPT_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI';
+        
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // =============================================
+        // NAVEGACIÓN
+        // =============================================
+        function mostrarVista(vistaId) {
+            // Ocultar todas las vistas
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Mostrar la vista seleccionada
+            document.getElementById(vistaId).classList.add('active');
+            
+            // Actualizar botones activos del menú
+            document.querySelectorAll('.menu-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Scroll al inicio
+            window.scrollTo(0, 0);
+        }
+
+        // =============================================
+        // FUNCIONES DE MENSAJES
+        // =============================================
+        function mostrarMensaje(contenedorId, texto, tipo = 'info') {
+            const contenedor = document.getElementById(contenedorId);
+            contenedor.innerHTML = `<div class="message ${tipo}">${texto}</div>`;
+            
+            if (tipo === 'success') {
+                setTimeout(() => {
+                    contenedor.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        // =============================================
+        // CARGAR DATOS
+        // =============================================
+        async function cargarDatosDesdeGoogleSheets(action) {
+            try {
+                const url = `${GOOGLE_SCRIPT_URL}?action=${encodeURIComponent(action)}`;
+                const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Error desconocido');
+                }
+
+                return result.data;
+            } catch (error) {
+                console.error(`❌ Error al cargar ${action}:`, error);
+                throw error;
+            }
+        }
+
+        function llenarSelect(selectId, datos) {
+            const select = document.getElementById(selectId);
+            if (!select) {
+                console.error(`❌ Select con ID "${selectId}" no encontrado`);
+                return;
+            }
+            
+            select.innerHTML = '<option value="">Selecciona</option>';
+            
+            datos.forEach(item => {
+                const option = document.createElement('option');
+                
+                // Manejar clientes (para servicios e ingresos)
+                if (selectId === 'cliente' || selectId === 'ingresoCliente') {
+                    option.value = item.id || item.codigo;
+                    option.textContent = item.nombre;
+                } 
+                // Manejar vehículos (para servicios y gastos)
+                else if (selectId === 'vehiculo' || selectId === 'gastoVehiculo') {
+                    option.value = item.id || item.codigo;
+                    option.textContent = `${item.patente} - ${item.marca} ${item.modelo}`.trim();
+                } 
+                // Manejar conductores
+                else if (selectId === 'conductor') {
+                    option.value = item.id || item.codigo;
+                    option.textContent = item.nombre;
+                } 
+                // Manejar categorías y otros (descripción genérica)
+                else {
+                    option.value = item.codigo;
+                    option.textContent = item.descripcion;
+                }
+                
+                select.appendChild(option);
+            });
+        }
+
+        async function inicializarDatos() {
+            try {
+                const [clientes, vehiculos, conductores, tiposServicio, formasPago, categorias] = await Promise.all([
+                    cargarDatosDesdeGoogleSheets('obtenerClientes'),
+                    cargarDatosDesdeGoogleSheets('obtenerVehiculos'),
+                    cargarDatosDesdeGoogleSheets('obtenerConductores'),
+                    cargarDatosDesdeGoogleSheets('obtenerTiposServicio'),
+                    cargarDatosDesdeGoogleSheets('obtenerFormasPago'),
+                    cargarDatosDesdeGoogleSheets('obtenerCategorias')
+                ]);
+
+                llenarSelect('cliente', clientes);
+                llenarSelect('vehiculo', vehiculos);
+                llenarSelect('conductor', conductores);
+                llenarSelect('tipoServicio', tiposServicio);
+                llenarSelect('formaPago', formasPago);
+                
+                // Para formulario de ingresos
+                llenarSelect('ingresoCliente', clientes);
+                
+                // Para formulario de gastos
+                llenarSelect('gastoCategoria', categorias);
+                llenarSelect('gastoVehiculo', vehiculos);
+
+                console.log('✅ Datos cargados');
+                
+                // Cargar dashboard
+                await cargarDashboard();
+            } catch (error) {
+                console.error('❌ Error:', error);
+            }
+        }
+
+        // =============================================
+        // ENVIAR DATOS
+        // =============================================
+        async function enviarDatos(action, datos) {
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', action);
+                
+                for (const [key, value] of Object.entries(datos)) {
+                    formData.append(key, value);
+                }
+                
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Error desconocido');
+                }
+
+                return result;
+            } catch (error) {
+                console.error('💥 ERROR:', error);
+                throw error;
+            }
+        }
+
+        // =============================================
+        // MANEJADORES DE FORMULARIOS
+        // =============================================
+        
+        // VEHÍCULO
+        document.getElementById('formularioVehiculo').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnVehiculo');
+            btn.disabled = true;
+            btn.textContent = '⏳ Registrando...';
+            
+            try {
+                const formData = new FormData(e.target);
+                const datos = Object.fromEntries(formData.entries());
+                
+                const resultado = await enviarDatos('registrarVehiculo', datos);
+                
+                mostrarMensaje('mensajeVehiculo', `✅ Vehículo ${resultado.idVehiculo} registrado`, 'success');
+                e.target.reset();
+                
+                const vehiculos = await cargarDatosDesdeGoogleSheets('obtenerVehiculos');
+                llenarSelect('vehiculo', vehiculos);
+                
+                setTimeout(() => mostrarVista('vistaDashboard'), 2000);
+            } catch (error) {
+                mostrarMensaje('mensajeVehiculo', `❌ Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🚗 Registrar Vehículo';
+            }
+        });
+
+        // CLIENTE
+        document.getElementById('formularioCliente').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnCliente');
+            btn.disabled = true;
+            btn.textContent = '⏳ Registrando...';
+            
+            try {
+                const formData = new FormData(e.target);
+                const datos = Object.fromEntries(formData.entries());
+                
+                const resultado = await enviarDatos('registrarCliente', datos);
+                
+                mostrarMensaje('mensajeCliente', `✅ Cliente ${resultado.idCliente} registrado`, 'success');
+                e.target.reset();
+                
+                const clientes = await cargarDatosDesdeGoogleSheets('obtenerClientes');
+                llenarSelect('cliente', clientes);
+                
+                setTimeout(() => mostrarVista('vistaDashboard'), 2000);
+            } catch (error) {
+                mostrarMensaje('mensajeCliente', `❌ Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '👤 Registrar Cliente';
+            }
+        });
+
+        // CONDUCTOR
+        document.getElementById('formularioConductor').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnConductor');
+            btn.disabled = true;
+            btn.textContent = '⏳ Registrando...';
+            
+            try {
+                const formData = new FormData(e.target);
+                const datos = Object.fromEntries(formData.entries());
+                
+                const resultado = await enviarDatos('registrarConductor', datos);
+                
+                mostrarMensaje('mensajeConductor', `✅ Conductor ${resultado.idConductor} registrado`, 'success');
+                e.target.reset();
+                
+                const conductores = await cargarDatosDesdeGoogleSheets('obtenerConductores');
+                llenarSelect('conductor', conductores);
+                
+                setTimeout(() => mostrarVista('vistaDashboard'), 2000);
+            } catch (error) {
+                mostrarMensaje('mensajeConductor', `❌ Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '👨‍✈️ Registrar Conductor';
+            }
+        });
+
+        // SERVICIO
+        document.getElementById('formularioServicio').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnServicio');
+            btn.disabled = true;
+            btn.textContent = '⏳ Registrando...';
+            
+            try {
+                const formData = new FormData(e.target);
+                const datos = Object.fromEntries(formData.entries());
+                
+                const resultado = await enviarDatos('registrarServicio', datos);
+                
+                mostrarMensaje('mensajeServicio', `✅ Servicio ${resultado.idServicio} registrado`, 'success');
+                e.target.reset();
+                
+                setTimeout(() => mostrarVista('vistaDashboard'), 2000);
+            } catch (error) {
+                mostrarMensaje('mensajeServicio', `❌ Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '📝 Registrar Servicio';
+            }
+        });
+
+        // INGRESO
+        document.getElementById('formularioIngreso').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnIngreso');
+            btn.disabled = true;
+            btn.textContent = '⏳ Registrando...';
+            
+            try {
+                const formData = new FormData(e.target);
+                const datos = Object.fromEntries(formData.entries());
+                
+                // Convertir fechas de yyyy-mm-dd a dd/mm/yyyy
+                if (datos.fecha) {
+                    const [año, mes, dia] = datos.fecha.split('-');
+                    datos.fecha = `${dia}/${mes}/${año}`;
+                }
+                if (datos.fechaVencimiento) {
+                    const [año, mes, dia] = datos.fechaVencimiento.split('-');
+                    datos.fechaVencimiento = `${dia}/${mes}/${año}`;
+                }
+                
+                const resultado = await enviarDatos('registrarIngreso', datos);
+                
+                mostrarMensaje('mensajeIngreso', `✅ Ingreso ${resultado.idIngreso} registrado | Total: $${resultado.total.toLocaleString('es-CL')}`, 'success');
+                e.target.reset();
+                
+                await cargarDashboard(); // Actualizar dashboard
+                setTimeout(() => mostrarVista('vistaDashboard'), 2000);
+            } catch (error) {
+                mostrarMensaje('mensajeIngreso', `❌ Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💰 Registrar Ingreso';
+            }
+        });
+
+        // GASTO
+        document.getElementById('formularioGasto').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnGasto');
+            btn.disabled = true;
+            btn.textContent = '⏳ Registrando...';
+            
+            try {
+                const formData = new FormData(e.target);
+                const datos = Object.fromEntries(formData.entries());
+                
+                // Convertir fecha de yyyy-mm-dd a dd/mm/yyyy
+                if (datos.fecha) {
+                    const [año, mes, dia] = datos.fecha.split('-');
+                    datos.fecha = `${dia}/${mes}/${año}`;
+                }
+                
+                const resultado = await enviarDatos('registrarGasto', datos);
+                
+                mostrarMensaje('mensajeGasto', `✅ Gasto ${resultado.idGasto} registrado | Total: $${resultado.total.toLocaleString('es-CL')}`, 'success');
+                e.target.reset();
+                
+                await cargarDashboard(); // Actualizar dashboard
+                setTimeout(() => mostrarVista('vistaDashboard'), 2000);
+            } catch (error) {
+                mostrarMensaje('mensajeGasto', `❌ Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💸 Registrar Gasto';
+            }
+        });
+
+        // =============================================
+        // CARGAR DASHBOARD DINÁMICO
+        // =============================================
+        async function cargarDashboard() {
+            try {
+                const datos = await cargarDatosDesdeGoogleSheets('obtenerDashboard');
+                
+                if (!datos || !datos.kpis) {
+                    console.error('❌ No se pudieron cargar datos del dashboard');
+                    return;
+                }
+                
+                const kpis = datos.kpis;
+                
+                // Actualizar KPIs
+                document.querySelector('.kpi-card:nth-child(1) .kpi-value').textContent = 
+                    `$${Math.round(kpis.ingresosMesActual).toLocaleString('es-CL')}`;
+                document.querySelector('.kpi-card:nth-child(1) .kpi-change').textContent = 
+                    `vs. Mes Anterior: ${kpis.variacionIngresos}%`;
+                document.querySelector('.kpi-card:nth-child(1) .kpi-change').className = 
+                    `kpi-change ${kpis.variacionIngresos >= 0 ? 'positive' : 'negative'}`;
+                
+                document.querySelector('.kpi-card:nth-child(2) .kpi-value').textContent = 
+                    kpis.serviciosMesActual;
+                document.querySelector('.kpi-card:nth-child(2) .kpi-change').textContent = 
+                    `vs. Mes Anterior: ${kpis.variacionServicios}%`;
+                document.querySelector('.kpi-card:nth-child(2) .kpi-change').className = 
+                    `kpi-change ${kpis.variacionServicios >= 0 ? 'positive' : 'negative'}`;
+                
+                document.querySelector('.kpi-card:nth-child(3) .kpi-value').textContent = 
+                    `${kpis.margenNeto}%`;
+                document.querySelector('.kpi-card:nth-child(3) .kpi-change').textContent = 
+                    `vs. Mes Anterior: ${kpis.variacionMargen}%`;
+                document.querySelector('.kpi-card:nth-child(3) .kpi-change').className = 
+                    `kpi-change ${kpis.variacionMargen >= 0 ? 'positive' : 'negative'}`;
+                
+                // Actualizar alertas
+                if (datos.alertas && datos.alertas.length > 0) {
+                    const tbody = document.querySelector('.alert-table tbody');
+                    tbody.innerHTML = '';
+                    
+                    datos.alertas.forEach(alerta => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="alert-type">${alerta.tipo}</td>
+                            <td style="text-align: center;">${alerta.detalle}</td>
+                            <td>${alerta.accion}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+                
+                console.log('✅ Dashboard actualizado');
+            } catch (error) {
+                console.error('❌ Error al cargar dashboard:', error);
+            }
+        }
+
+        // =============================================
+        // INICIALIZACIÓN
+        // =============================================
+        window.addEventListener('DOMContentLoaded', () => {
+            inicializarDatos();
+            console.log('🚀 Sistema iniciado');
+        });
+    </script>
+</body>
+</html>
